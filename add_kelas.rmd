@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+output: html_document
+---
+```{r}
+library(dplyr)
+ads<-read.csv('C:/Users/atrke/Downloads/Advertising (1).csv')
+head(ads)
+dim(ads)
+summary(ads)
+```
+DESCRIPTIVE
+Ans_1: No
+Ans_2:
+```{r}
+library(ggplot2)
+plot(ads$Sales,ads$TV,type='p',col="red")
+plot(ads$Sales,ads$Radio,type='p',col="blue")
+plot(ads$Sales,ads$Newspaper, type='p',col="green")
+pairs(ads)
+```
+DIAGNOSTIC
+Ans_1:
+Ans_2:
+```{r}
+library(corrplot)
+num.cols<-sapply(ads, is.numeric)
+cor.data<-cor(ads[,num.cols])
+cor.data
+corrplot(cor.data,method='color')
+
+model_simple<-lm(Sales~TV,data=ads)
+summary(model_simple)
+
+tidy(model_simple)
+model_multiple <- lm(Sales ~ TV + Newspaper + Radio,data=ads)
+summary(model_multiple)
+
+
+library(caTools)
+set.seed(101)
+sample<-sample.split(ads$TV,SplitRatio=0.70)
+train=subset(ads,sample==TRUE)
+test=subset(ads,sample==FALSE)
+model<-lm(Sales~.,train)
+summary(model)
+
+res<-residuals(model)
+res<-as.data.frame(res)
+head(res)
+```
+PREDICTIVE
+Ans_1:
+Ans_2:
+```{r}
+sales.predictions<-predict(model,test)
+sales.predictions
+
+result<-cbind(sales.predictions,test$Sales)
+result
+colnames(result)<-c('pred','real')
+result<-as.data.frame(result)
+result
+
+rsq=summary(model_multiple)$r.sq
+rsq
+
+```
