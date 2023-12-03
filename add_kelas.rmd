@@ -2,16 +2,19 @@
 title: "R Notebook"
 output: html_document
 ---
+Nama: Ayat Tulloh Rahulloh Khomeini
+NRP: 5026211156
 ```{r}
 library(dplyr)
 ads<-read.csv('C:/Users/atrke/Downloads/Advertising (1).csv')
-head(ads)
-dim(ads)
-summary(ads)
+#head(ads)
+#dim(ads)
+#summary(ads)
+ads
 ```
 DESCRIPTIVE
-Ans_1: No
-Ans_2:
+Ans_1: Not at all, ads$Sales//TV are the only have a one direction
+Ans_2: The TV ads is more powerful to affected in sales, as in visualized in scatter that explain TV ads has up-trend with less outlier
 ```{r}
 library(ggplot2)
 plot(ads$Sales,ads$TV,type='p',col="red")
@@ -20,8 +23,8 @@ plot(ads$Sales,ads$Newspaper, type='p',col="green")
 pairs(ads)
 ```
 DIAGNOSTIC
-Ans_1:
-Ans_2:
+Ans_1:Lowest is 'Newspaper' with value of correlation 0.228299, Highest is 'TV' with value of correlation 0.782224
+Ans_2: intercept is 7.0325935491277, slope is 0.0475366404330198
 ```{r}
 library(corrplot)
 num.cols<-sapply(ads, is.numeric)
@@ -32,6 +35,7 @@ corrplot(cor.data,method='color')
 model_simple<-lm(Sales~TV,data=ads)
 summary(model_simple)
 
+library(broom)
 tidy(model_simple)
 model_multiple <- lm(Sales ~ TV + Newspaper + Radio,data=ads)
 summary(model_multiple)
@@ -50,8 +54,8 @@ res<-as.data.frame(res)
 head(res)
 ```
 PREDICTIVE
-Ans_1:
-Ans_2:
+Ans_1: the predicted sales value for the first data point (11) is 7.058704. Similarly, the predicted sales value for the last data point (198) is 13.068875. In the meaning of words, the pred said the sales will growth around +6.010171
+Ans_2:0.8972106
 ```{r}
 sales.predictions<-predict(model,test)
 sales.predictions

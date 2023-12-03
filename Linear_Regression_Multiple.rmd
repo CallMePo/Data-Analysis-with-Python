@@ -1,0 +1,131 @@
+---
+title: "Linear Regression Multiple"
+output: html_document
+---
+
+The Data
+```{r}
+download.file("http://www.openintro.org/stat/data/evals.RData", destfile =
+"evals.RData")
+
+load("evals.RData")
+```
+Exploring The Data
+
+1. Exercise 1:
+This study is observational mainly due to the absence of a control group, making it challenging to determine if beauty directly influences variations in course evaluations. Establishing causation is difficult because correlation does not imply causation, and various factors unrelated to a professor's attractiveness could contribute to differences in evaluation scores. A more feasible question to address is whether there is a connection between a professor's attractiveness and course evaluations.
+```{r}
+hist(evals$score)
+```
+
+2. The distribution of scores is left skewed, in means that the students rated courses more positively. What I expected to see was a normal distribution like a common data.
+```{r}
+boxplot(evals$bty_avg ~ evals$language)
+```
+3. Exercise 3:
+    even though the beauty-average medians of the two groups are relatively similar, the variability and spread of the two boxplots is s different. Professors who graduated from an english language received beauty avrage score 8 & the lowest is 2. Conversely, those from non-English institutions had beauty averages ranging from approximately 5.5 to the lowest 3.5, with an outlier at around three. The data for non-English-educated professors is tightly clustered around the median
+
+
+SIMPLE LINEAR REGRESSION
+```{r}
+library(ggplot2)
+plot(evals$score~evals$bty_avg)
+plot(jitter(evals$score)~jitter(evals$bty_avg))
+```
+4. Exercise 4:
+    There so much noise that was surrounding the data, this implies that there is more variability or noise surrounding the data, which may not be obvious in the original scatterplot.
+```{r}
+model<-lm(evals$score~evals$bty_avg)
+plot(jitter(evals$score)~evals$bty_avg)
+abline(model)
+summary(model)$coefficients
+```
+5. Exercise 5:
+
+    "the eval score = 3.88033795 + 0.06663704 * bty_avg"
+this means that for every single count increase in bty_avg, the score increases by 0.06663704
+
+    "the p-value score = 5.082731e-05"
+since the p-value is very low (< 0.5), which implies that this model is not appropriate for the data. As such, beauty average may not be a practically significant predictor.
+
+```{r}
+hist(model$residuals)
+plot(model$residuals,evals$bty_avg)
+abline(h=0, lty=3)
+```
+6. Exercise 6:
+    The residuals are left-skewed. the residuals do not appear to have a constant spread, they are not concentrated around the zero line. then The conditions are not being met
+
+
+MULTIPLE LINEAR REGRESSION
+```{r}
+plot(evals$bty_avg ~ evals$bty_f1lower)
+cor(evals$bty_avg, evals$bty_f1lower)
+plot(evals[,13:19])
+
+m_bty_gen <- lm(score ~ bty_avg + gender, data = evals)
+summary(m_bty_gen)
+```
+```{r}
+plot(model$residuals~evals$bty_avg)
+abline(h=0,lty=3)
+
+qqnorm(model$residuals)
+qqline(model$residuals)
+```
+7. Exercise 7:
+    linearity is not proven because there is no pattern. Most points on the QQ plot are close to the QQ line region, but there are some outliers. It can be assumed the conditions have been met.
+```{r}
+summary(m_bty_gen)
+
+multiLines(m_bty_gen)
+```
+9. Exercise 9:
+    the average beauty value is 8.177x10^-7. this indicates that the p-value is still low and average beauty is still a predictor.
+```{r}
+m_bty_rank<-lm(score~bty_avg + rank, data=evals)
+summary(m_bty_rank)
+```
+10. Exercise 10:
+    sadly, R only displays tenure track and tenured :(
+
+
+THE SEARCH FOR THE BEST MODEL
+```{r}
+m_full<-lm(score ~ rank + ethnicity + gender + language + age + cls_perc_eval + cls_students + cls_level + cls_profs + cls_credits + bty_avg + pic_outfit + pic_color, data = evals)
+summary(m_full)
+```
+11. Exercise 11:
+    I initially thought pic_color was the variable that had the highest p-value because it was not related to students rating professors.
+12. Exercise 12:
+    In fact, the cls_profs variable is the variable that has the highest p-value, which means that this variable is the variable that has the least influence on the score.
+13. Exercise 13:
+    The ethnicity_not_minority variable increases the score by 0.1234929 when all other variables are held constant.
+
+```{r}
+m_full <- lm(score ~ ethnicity + gender + language + age + cls_perc_eval + cls_credits + bty_avg + pic_color, data = evals)
+summary(m_full)
+```
+14. Exercise 14:
+    when cls_profs is removed, most of the coefficients decrease, and most of the significances increase.
+```{r}
+top_model= lm(score ~ ethnicity + gender + language + age + cls_perc_eval + cls_credits + bty_avg + pic_color, data = evals)
+summary(backwards)
+```
+15. Exercise 15:
+    score-hat = b0-hat+ b1-hat(ethnicty)+ b2-hat(gender)+ b3-hat(language)+ b4-hat(age)+ b5-hat(cls_perc_eval)+ b6-hat(cls_credits)+ b7-hat(bty_avg)+ b8-hat(pic_color)
+```{r}
+plot(top_model$residuals)
+abline(h = 0, lty = 3)
+
+qqnorm(top_model$residuals)
+qqline(top_model$residuals)
+```
+16. Exercise 16:
+    linearity is not proven because there is no pattern. It can be seen on the qq-plot that the data points fall along the normal line, so the conditions of normality and homoscedasticity are met.
+17. Exercise 17:
+    it would affect the linear regression because there would be overlapping data. it would mean that the observations were not independent of each other which is a condition that needs to be met.
+18. Exercise 18:
+    This model tells that a professor who would be indicated by a high evaluation score would be someone who is male, not a minority, has a color photograph, received an education taught in English, taught a one-credit course, is young, has a high percentage of students who completed the course evaluation, and has a high average beauty score.
+19. Exercise 19:
+    I would not agree that it would feel comfortable to generalize, the results of this data are not suitable for the university I am at, perhaps this can only be generalized at that university.
