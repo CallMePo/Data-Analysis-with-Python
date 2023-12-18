@@ -2,6 +2,9 @@
 title: "Linear Regression Multiple"
 output: html_document
 ---
+Nama: Ayat Tulloh Rahulloh Khomeini
+NRP: 5026211156
+
 
 The Data
 ```{r}

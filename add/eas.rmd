@@ -1,0 +1,107 @@
+---
+title: "R Notebook"
+output: html_document
+---
+
+
+```{r}
+library(openxlsx)
+df<-read.xlsx('D:/Data Visualization/add/datasets/panjang_jalan__diperbaiki.xlsx')
+
+```
+drop collumns that not make sense
+```{r}
+column_drop<-c("id","nama_node1","nama_node2","kode_node1","kode_node2", "kode_jalan","tanggal_mulai","tanggal_selesai","nama_jalan","kelurahan", "kecamatan","jenis_pekerjaan")
+df <- df[, !(names(df) %in% column_drop)]
+```
+Encode deskripsi_pembangunan
+```{r}
+df$deskripsi_pembangunan <- as.numeric(as.factor(df$deskripsi_pembangunan))
+
+
+```
+
+compare
+```{r}
+library(ggplot2)
+plot(df$luasan_pengerjaan,df$panjang_jalan,type='p',col="red")
+plot(df$luasan_pengerjaan,df$lebar_jalan,type='p',col="blue")
+plot(df$luasan_pengerjaan,df$deskripsi_pembangunan, type='p',col="green")
+```
+```{r}
+x<-df$panjang_jalan
+y<-df$luasan_pengerjaan
+plot(y~x)
+models<-lm(y~x)
+abline(models)
+
+x1<-df$lebar_jalan
+y1<-df$luasan_pengerjaan
+plot(y1~x1)
+models1<-lm(y1~x1)
+abline(models1)
+
+x2<-df$deskripsi_pembangunan
+y2<-df$luasan_pengerjaan
+plot(y2~x2)
+models2<-lm(y2~x2)
+abline(models2)
+```
+```{r}
+plot_ss(y,x, showSquares = TRUE)
+plot_ss(y1,x1, showSquares = TRUE)
+plot_ss(y2,x2, showSquares = TRUE)
+```
+```{r}
+cor(y,x)
+cor(y1,x1)
+cor(y2,x2)
+```
+```{r}
+summary(models)
+summary(models1)
+summary(models2)
+```
+```{r}
+hist(models$residuals)
+hist(models1$residuals)
+hist(models2$residuals)
+```
+```{r}
+qqnorm(models$residuals)
+qqline(models$residuals)
+
+qqnorm(models1$residuals)
+qqline(models1$residuals)
+
+qqnorm(models2$residuals)
+qqline(models2$residuals)
+```
+```{r}
+library(corrplot)
+num.cols<-sapply(df, is.numeric)
+cor.data<-cor(df[,num.cols])
+cor.data
+corrplot(cor.data,method='color')
+
+model_simple<-lm(luasan_pengerjaan~panjang_jalan,data=df)
+summary(model_simple)
+
+library(broom)
+tidy(model_simple)
+model_multiple <- lm(luasan_pengerjaan ~ panjang_jalan + lebar_jalan + deskripsi_pembangunan,data=df)
+summary(model_multiple)
+
+
+library(caTools)
+set.seed(101)
+sample<-sample.split(df$panjang_jalan,SplitRatio=0.70)
+train=subset(df,sample==TRUE)
+test=subset(df,sample==FALSE)
+model<-lm(luasan_pengerjaan~.,train)
+summary(model)
+
+res<-residuals(model)
+res<-as.data.frame(res)
+head(res)
+```

@@ -1,0 +1,94 @@
+---
+title: "Linear Regression Single"
+output: html_document
+---
+Nama: Ayat Tulloh Rahulloh Khomeini
+NRP: 5026211156
+
+
+The Data
+```{r}
+download.file("http://www.openintro.org/stat/data/mlb11.RData", destfile =
+"mlb11.RData")
+load("mlb11.RData")
+```
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ON YOUR OWN
+```{r}
+library(ggplot2)
+#first step, looks and compare each variable
+pairs(mlb11)
+```
+```{r}
+x3<-mlb11$bat_avg
+y3<-mlb11$runs
+plot(y3~x3)
+models<-lm(y3~x3)
+abline(models)
+```
+```{r}
+cor(y3,x3)
+```
+1.  y^ = -642 + 5242.2 * 0.8099859
+y^ = 3604.10808498
+linear and relatively strong
+```{r}
+summary(model)
+```
+```{r}
+summary(models)
+```
+2. the R^2 at_bats is 0.3729 then avg_bats is 0.6561. by the R^2 value, model avg_bats more greater than model at_bats, so it is clear that the variable bat_avg predicts runs better than at bats
+```{r}
+x3<-mlb11$bat_avg
+y3<-mlb11$runs
+plot(y3~x3)
+models<-lm(y3~x3)
+abline(models)
+```
+```{r}
+hist(models$residuals)
+```
+```{r}
+qqnorm(models$residuals)
+qqline(models$residuals)
+```
+```{r}
+cor(y3,x3)
+```
+```{r}
+summary(models)
+```
+3. It had a correlation coefficient of 0.8099859 which is a strong positive correlation. Also the R^2 value is 0.6561 which is also high
+
+```{r}
+cor(mlb11$runs, mlb11$new_onbase)
+cor(mlb11$runs, mlb11$new_slug)
+cor(mlb11$runs, mlb11$new_obs)
+
+summary(lm(runs ~ new_onbase, data = mlb11))
+summary(lm(runs ~ new_slug, data = mlb11))
+summary(lm(runs ~ new_obs, data = mlb11))
+```
+```{r}
+x3<-mlb11$bat_avg
+y3<-mlb11$runs
+plot(y3~x3)
+models<-lm(y3~x3)
+abline(models)
+```
+4. After examining the summary statistics and correlation coefficients of all three new predictors new_onbase, new_slug and new_obs, the relationship between runs and new_obs variable has the highest R2 and coefficient correlation values and appears to be the best and most effective predictor of the runs.
+```{r}
+model5<-lm(mlb11$runs ~ mlb11$new_onbase)
+plot(model5$residuals ~ mlb11$bat_avg)
+abline(h=0, lty=3)
+```
+```{r}
+hist(model5$residuals)
+qqnorm(model5$residuals)
+qqline(model5$residuals)
+```
+5. 1) there is no direct pattern.
+   2) the normal quantile-quantile plot of the residuals indicates a pretty straight line so we can safely say that the residuals are approximately normaly distributed and the model meets the nearly normal residuals condition
+   3) the variability of points around the least squares line still constant = variability has been met
